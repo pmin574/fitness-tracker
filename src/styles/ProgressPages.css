@@ -1,0 +1,972 @@
+.progress-page-container {
+  width: 100%;
+  max-width: 1200px;
+  padding: 30px 20px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.progress-page-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 40px;
+  width: 100%;
+}
+
+.back-button {
+  background: transparent;
+  border: none;
+  color: var(--primary-orange);
+  font-size: 16px;
+  padding: 5px 10px;
+  cursor: pointer;
+  margin-right: 15px;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+}
+
+.back-button:hover {
+  color: var(--dark-orange);
+  transform: translateX(-5px);
+}
+
+.progress-page-container h2 {
+  margin: 0;
+  color: var(--text-dark);
+  font-size: 28px;
+  font-weight: 700;
+}
+
+.clickable-title {
+  cursor: pointer;
+  position: relative;
+  width: fit-content;
+  transition: all 0.3s ease;
+}
+
+.clickable-title:hover {
+  color: var(--primary-orange);
+}
+
+.clickable-title::before {
+  content: "← ";
+  opacity: 0;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  position: absolute;
+  left: -24px;
+  transform: translateX(10px);
+  color: var(--primary-orange);
+}
+
+.clickable-title:hover::before {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+/* Summary Metrics Styles */
+.summary-metrics {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 25px;
+  width: 100%;
+  margin-top: 30px;
+  margin-bottom: 40px;
+}
+
+/* Make cards stack on mobile */
+@media (max-width: 1200px) {
+  .summary-metrics {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 600px) {
+  .summary-metrics {
+    grid-template-columns: 1fr;
+  }
+}
+
+.metric-card {
+  background-color: var(--background-light);
+  border-radius: var(--card-radius);
+  box-shadow: 0 8px 25px var(--shadow-color);
+  padding: 25px 20px;
+  text-align: center;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.metric-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 5px;
+  background: linear-gradient(
+    to right,
+    var(--gradient-start),
+    var(--gradient-end)
+  );
+}
+
+.metric-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.12);
+}
+
+.metric-card h3 {
+  font-size: 16px;
+  color: var(--text-medium);
+  margin: 0 0 15px 0;
+  font-weight: 600;
+}
+
+.metric-value {
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--text-dark);
+  margin-bottom: 8px;
+  background: linear-gradient(
+    to right,
+    var(--gradient-start),
+    var(--gradient-end)
+  );
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.metric-label {
+  font-size: 14px;
+  color: var(--text-medium);
+}
+
+.progress-content {
+  width: 100%;
+  background-color: var(--background-light);
+  border-radius: var(--card-radius);
+  box-shadow: 0 8px 25px var(--shadow-color);
+  padding: 30px;
+  min-height: 300px;
+}
+
+.empty-state {
+  text-align: center;
+  color: var(--text-medium);
+  font-size: 16px;
+  padding: 50px 0;
+  line-height: 1.6;
+}
+
+.progress-data-section {
+  width: 100%;
+  padding: 20px 0;
+}
+
+/* Loading and error states */
+.progress-page-container.loading,
+.progress-page-container.error {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 400px;
+  color: var(--text-medium);
+}
+
+.progress-page-container.error {
+  color: var(--error-color);
+}
+
+/* Exercise Tracking Styles */
+.exercise-tracking-section {
+  width: 100%;
+  margin-top: 40px;
+  padding: 30px;
+  background-color: var(--background-light);
+  border-radius: var(--card-radius);
+  box-shadow: 0 8px 25px var(--shadow-color);
+}
+
+.section-title {
+  font-size: 22px;
+  color: var(--text-dark);
+  margin: 0 0 25px 0;
+  padding-bottom: 15px;
+  border-bottom: 1px solid var(--border-color);
+  position: relative;
+  font-weight: 600;
+}
+
+.section-title::after {
+  content: "";
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  width: 80px;
+  height: 3px;
+  background: linear-gradient(
+    to right,
+    var(--gradient-start),
+    var(--gradient-end)
+  );
+  border-radius: 2px;
+}
+
+.selection-help {
+  margin-bottom: 20px;
+  font-size: 16px;
+  color: var(--text-medium);
+  line-height: 1.5;
+}
+
+.exercise-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 30px;
+}
+
+.exercise-item {
+  padding: 10px 18px;
+  background-color: rgba(255, 87, 34, 0.05);
+  border-radius: 30px;
+  font-size: 15px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: 1px solid transparent;
+  color: var(--text-dark);
+}
+
+.exercise-item:hover {
+  background-color: rgba(255, 87, 34, 0.1);
+  color: var(--primary-orange);
+  border-color: rgba(255, 87, 34, 0.2);
+  transform: translateY(-3px);
+}
+
+.exercise-item.selected {
+  background: linear-gradient(
+    to right,
+    var(--gradient-start),
+    var(--gradient-end)
+  );
+  color: white;
+  border-color: var(--primary-orange);
+  box-shadow: 0 5px 15px rgba(255, 87, 34, 0.3);
+}
+
+.exercise-detail-placeholder {
+  margin-top: 30px;
+  padding: 40px;
+  text-align: center;
+  background-color: rgba(255, 255, 255, 0.5);
+  border-radius: var(--card-radius);
+  border: 2px dashed rgba(255, 87, 34, 0.2);
+}
+
+.exercise-detail-placeholder p {
+  margin: 15px 0;
+  color: var(--text-medium);
+}
+
+.exercise-detail-placeholder p:first-child {
+  font-weight: 600;
+  color: var(--text-dark);
+  font-size: 18px;
+}
+
+/* Exercise Dropdown Styles */
+.exercise-dropdown-container {
+  position: relative;
+  width: 100%;
+  max-width: 400px;
+  margin-bottom: 30px;
+}
+
+.exercise-dropdown-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 18px;
+  background-color: var(--background-light);
+  border: 2px solid var(--border-color);
+  border-radius: var(--button-radius);
+  cursor: pointer;
+  user-select: none;
+  transition: all 0.3s ease;
+}
+
+.exercise-dropdown-header:hover {
+  border-color: var(--primary-orange);
+  box-shadow: 0 0 0 3px rgba(255, 87, 34, 0.1);
+}
+
+.dropdown-arrow {
+  transition: transform 0.3s ease;
+  color: var(--primary-orange);
+  font-size: 18px;
+}
+
+.exercise-dropdown-menu {
+  position: absolute;
+  top: calc(100% + 5px);
+  left: 0;
+  width: 100%;
+  background-color: var(--background-light);
+  border-radius: var(--card-radius);
+  box-shadow: 0 8px 25px var(--shadow-color);
+  z-index: 10;
+  overflow: hidden;
+  animation: slideDown 0.3s ease;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.exercise-search-container {
+  padding: 15px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.exercise-search-input {
+  width: 100%;
+  padding: 12px 16px;
+  border: 2px solid var(--border-color);
+  border-radius: var(--button-radius);
+  font-size: 15px;
+}
+
+.exercise-search-input:focus {
+  outline: none;
+  border-color: var(--primary-orange);
+  box-shadow: 0 0 0 3px rgba(255, 87, 34, 0.1);
+}
+
+.exercise-dropdown-items {
+  max-height: 250px;
+  overflow-y: auto;
+}
+
+.exercise-dropdown-item {
+  padding: 12px 16px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border-left: 3px solid transparent;
+  font-size: 15px;
+  color: var(--text-dark);
+}
+
+.exercise-dropdown-item.none-option {
+  font-style: italic;
+  color: var(--text-medium);
+  border-bottom: 1px solid var(--border-color);
+  background-color: rgba(0, 0, 0, 0.01);
+}
+
+.exercise-dropdown-item:last-child {
+  border-bottom: none;
+}
+
+.exercise-dropdown-item:hover {
+  background-color: rgba(255, 87, 34, 0.05);
+  border-left-color: var(--primary-orange);
+  padding-left: 20px;
+}
+
+.exercise-dropdown-item.selected {
+  background-color: rgba(255, 87, 34, 0.1);
+  border-left-color: var(--primary-orange);
+  font-weight: 500;
+}
+
+.selected-exercise-name {
+  font-weight: 500;
+  color: var(--text-dark);
+}
+
+.no-exercise-matches {
+  padding: 20px;
+  text-align: center;
+  color: var(--text-medium);
+  font-style: italic;
+}
+
+.exercise-details {
+  margin-top: 40px;
+  padding: 30px;
+  background-color: var(--background-light);
+  border-radius: var(--card-radius);
+  box-shadow: 0 5px 20px var(--shadow-color);
+}
+
+.exercise-title {
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--text-dark);
+  margin-bottom: 30px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid var(--border-color);
+  position: relative;
+}
+
+.exercise-title::after {
+  content: "";
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  width: 60px;
+  height: 3px;
+  background: linear-gradient(
+    to right,
+    var(--gradient-start),
+    var(--gradient-end)
+  );
+  border-radius: 2px;
+}
+
+.exercise-chart-container {
+  margin: 30px 0;
+  padding: 20px;
+  background-color: rgba(255, 255, 255, 0.8);
+  border-radius: var(--card-radius);
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+  position: relative;
+}
+
+.chart-title {
+  margin-bottom: 20px;
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-dark);
+  display: flex;
+  align-items: center;
+}
+
+.filter-badge {
+  display: inline-block;
+  padding: 4px 10px;
+  margin-left: 10px;
+  background-color: rgba(255, 87, 34, 0.1);
+  color: var(--primary-orange);
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.filter-badge.all-reps {
+  background-color: rgba(255, 87, 34, 0.2);
+  color: var(--dark-orange);
+}
+
+.no-chart-data {
+  padding: 40px 20px;
+  text-align: center;
+  background-color: rgba(0, 0, 0, 0.02);
+  border-radius: var(--card-radius);
+  color: var(--text-medium);
+}
+
+.no-chart-data p {
+  margin: 5px 0;
+}
+
+.exercise-prompt {
+  padding: 30px;
+  text-align: center;
+  background-color: rgba(255, 255, 255, 0.5);
+  border-radius: var(--card-radius);
+  border: 2px dashed rgba(255, 87, 34, 0.2);
+  margin: 40px 0;
+}
+
+.exercise-prompt p {
+  margin: 10px 0;
+  color: var(--text-medium);
+  line-height: 1.6;
+}
+
+.filter-controls {
+  margin-bottom: 30px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.filter-dropdown {
+  position: relative;
+  margin-left: auto;
+}
+
+.filter-dropdown-header {
+  display: flex;
+  align-items: center;
+  padding: 10px 15px;
+  background-color: var(--background-light);
+  border: 1px solid var(--border-color);
+  border-radius: var(--button-radius);
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  color: var(--text-dark);
+  gap: 8px;
+}
+
+.filter-dropdown-header:hover {
+  border-color: var(--primary-orange);
+  box-shadow: 0 0 0 3px rgba(255, 87, 34, 0.1);
+}
+
+.filter-dropdown-content {
+  position: absolute;
+  top: calc(100% + 5px);
+  right: 0;
+  width: 400px;
+  max-width: 90vw;
+  background-color: var(--background-light);
+  border-radius: var(--card-radius);
+  box-shadow: 0 5px 20px var(--shadow-color);
+  z-index: 100;
+  overflow: visible;
+}
+
+.filter-options {
+  display: flex;
+  padding: 15px;
+  gap: 20px;
+}
+
+.filter-column {
+  flex: 1;
+}
+
+.filter-column h4 {
+  margin: 0 0 10px 0;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-dark);
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.filter-column ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.filter-column li {
+  padding: 8px 12px;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+  font-size: 14px;
+  color: var(--text-medium);
+  display: flex;
+  align-items: center;
+}
+
+.filter-column li:hover {
+  background-color: rgba(255, 87, 34, 0.05);
+  color: var(--primary-orange);
+}
+
+.filter-column li.active {
+  background-color: rgba(255, 87, 34, 0.1);
+  color: var(--primary-orange);
+  font-weight: 500;
+}
+
+.specific-reps-list {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+/* Add specific styling for the specific reps list items */
+.specific-reps-list li {
+  text-align: center;
+  justify-content: center;
+  padding: 6px 4px;
+  min-width: 36px;
+}
+
+@media (max-width: 600px) {
+  .filter-options {
+    flex-direction: column;
+  }
+
+  .filter-column {
+    width: 100%;
+  }
+
+  .specific-reps-list {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.exercise-heatmap-container {
+  margin-top: 40px;
+  padding: 30px;
+  background-color: var(--background-light);
+  border-radius: var(--card-radius);
+  box-shadow: 0 8px 25px var(--shadow-color);
+}
+
+.heatmap-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 25px;
+  flex-wrap: wrap;
+}
+
+.heatmap-header h3 {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--text-dark);
+  position: relative;
+  padding-bottom: 5px;
+}
+
+.heatmap-description {
+  margin-bottom: 20px;
+  line-height: 1.6;
+  color: var(--text-medium);
+  font-size: 15px;
+  max-width: 800px;
+}
+
+.heatmap-description strong {
+  color: var(--primary-orange);
+}
+
+.year-selector {
+  display: flex;
+  gap: 10px;
+}
+
+.year-button {
+  padding: 8px 16px;
+  background-color: var(--background-light);
+  border: 1px solid var(--border-color);
+  border-radius: var(--button-radius);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  color: var(--text-dark);
+}
+
+.year-button:hover {
+  border-color: var(--primary-orange);
+  color: var(--primary-orange);
+  transform: translateY(-2px);
+}
+
+.year-button.active {
+  background: linear-gradient(
+    to right,
+    var(--gradient-start),
+    var(--gradient-end)
+  );
+  color: white;
+  border-color: transparent;
+  box-shadow: 0 4px 12px rgba(255, 87, 34, 0.3);
+}
+
+.calendar-heatmap-wrapper {
+  padding: 30px 0;
+  overflow-x: auto;
+  max-width: 100%;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+}
+
+.react-calendar-heatmap {
+  width: 100% !important;
+  height: auto !important;
+}
+
+.react-calendar-heatmap .react-calendar-heatmap-small-rect {
+  fill: #eee;
+  stroke: white;
+  stroke-width: 3px;
+  rx: 2px;
+  ry: 2px;
+  transition: all 0.2s ease;
+}
+
+.react-calendar-heatmap .react-calendar-heatmap-month-label {
+  font-size: 12px;
+  fill: var(--text-medium);
+  font-weight: 500;
+}
+
+.react-calendar-heatmap text {
+  font-size: 10px;
+  fill: var(--text-medium);
+  font-family: var(--font-main);
+}
+
+.react-calendar-heatmap .color-empty {
+  fill: #f1f1f1;
+}
+
+.react-calendar-heatmap .color-scale-1 {
+  fill: #ffccbc;
+}
+
+.react-calendar-heatmap .color-scale-2 {
+  fill: #ffab91;
+}
+
+.react-calendar-heatmap .color-scale-3 {
+  fill: #ff8a65;
+}
+
+.react-calendar-heatmap .color-scale-4 {
+  fill: #ff5722;
+}
+
+.heatmap-legend {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px;
+  font-size: 14px;
+  color: var(--text-medium);
+  gap: 15px;
+}
+
+.legend-scale {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.legend-item {
+  width: 16px;
+  height: 16px;
+  border-radius: 3px;
+  transition: transform 0.2s ease;
+  cursor: help;
+}
+
+.legend-item:hover {
+  transform: scale(1.2);
+}
+
+.legend-item.color-empty {
+  background-color: #f1f1f1;
+}
+
+.legend-item.color-scale-1 {
+  background-color: #ffccbc;
+}
+
+.legend-item.color-scale-2 {
+  background-color: #ffab91;
+}
+
+.legend-item.color-scale-3 {
+  background-color: #ff8a65;
+}
+
+.legend-item.color-scale-4 {
+  background-color: #ff5722;
+}
+
+.legend-label {
+  font-size: 13px;
+  white-space: nowrap;
+  color: var(--text-medium);
+}
+
+@media (max-width: 900px) {
+  .calendar-heatmap-wrapper {
+    padding: 20px 0;
+  }
+}
+
+@media (max-width: 768px) {
+  .exercise-heatmap-container {
+    padding: 20px;
+  }
+
+  .calendar-heatmap-wrapper {
+    padding: 10px 0;
+  }
+
+  .react-calendar-heatmap .react-calendar-heatmap-small-rect {
+    stroke-width: 2px;
+  }
+
+  .heatmap-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
+  }
+
+  .heatmap-description {
+    font-size: 14px;
+  }
+
+  .year-selector {
+    width: 100%;
+    overflow-x: auto;
+    padding-bottom: 10px;
+  }
+
+  .react-calendar-heatmap text,
+  .react-calendar-heatmap .react-calendar-heatmap-month-label {
+    font-size: 9px;
+  }
+}
+
+.charts-container {
+  display: flex;
+  gap: 40px;
+  flex-wrap: wrap;
+  width: 100%;
+}
+
+.exercise-heatmap-container,
+.exercise-volume-container {
+  flex: 1;
+  min-width: 45%;
+  margin-top: 40px;
+  padding: 30px;
+  background-color: var(--background-light);
+  border-radius: var(--card-radius);
+  box-shadow: 0 8px 25px var(--shadow-color);
+}
+
+.exercise-volume-container {
+  position: relative;
+}
+
+.volume-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 25px;
+  flex-wrap: wrap;
+}
+
+.volume-header h3 {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--text-dark);
+  position: relative;
+  padding-bottom: 5px;
+}
+
+.volume-description {
+  margin-bottom: 20px;
+  line-height: 1.6;
+  color: var(--text-medium);
+  font-size: 15px;
+  max-width: 800px;
+}
+
+.volume-description strong {
+  color: var(--primary-orange);
+}
+
+.date-range-selector {
+  display: flex;
+  gap: 10px;
+}
+
+.range-button {
+  padding: 8px 16px;
+  background-color: var(--background-light);
+  border: 1px solid var(--border-color);
+  border-radius: var(--button-radius);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  color: var(--text-dark);
+}
+
+.range-button:hover {
+  border-color: var(--primary-orange);
+  color: var(--primary-orange);
+  transform: translateY(-2px);
+}
+
+.range-button.active {
+  background: linear-gradient(
+    to right,
+    var(--gradient-start),
+    var(--gradient-end)
+  );
+  color: white;
+  border-color: transparent;
+  box-shadow: 0 4px 12px rgba(255, 87, 34, 0.3);
+}
+
+.volume-chart-wrapper {
+  width: 100%;
+  height: 300px;
+  margin-top: 20px;
+}
+
+/* Responsive charts layout */
+@media (max-width: 1200px) {
+  .charts-container {
+    flex-direction: column;
+    gap: 30px;
+  }
+
+  .exercise-heatmap-container,
+  .exercise-volume-container {
+    width: 100%;
+    min-width: 100%;
+  }
+
+  .exercise-heatmap-container {
+    margin-top: 30px;
+  }
+}
+
+@media (max-width: 768px) {
+  .volume-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
+  }
+
+  .date-range-selector {
+    width: 100%;
+    overflow-x: auto;
+    padding-bottom: 10px;
+    gap: 5px;
+  }
+
+  .range-button {
+    padding: 6px 12px;
+    font-size: 13px;
+  }
+
+  .volume-description {
+    font-size: 14px;
+  }
+}

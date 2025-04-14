@@ -1,0 +1,132 @@
+.weight-history-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.weight-history-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 30px;
+}
+
+.weight-history-header h2 {
+  margin: 0;
+  font-size: 24px;
+  color: #333;
+}
+
+.back-button {
+  display: flex;
+  align-items: center;
+  background: none;
+  border: none;
+  color: #666;
+  cursor: pointer;
+  font-size: 16px;
+  padding: 8px;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+}
+
+.back-button:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.log-weight-button {
+  display: flex;
+  align-items: center;
+  background-color: var(--primary-orange);
+  color: white;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 6px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.log-weight-button:hover {
+  background-color: #e65100;
+}
+
+.weight-logs-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.weight-log-card {
+  background-color: white;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s;
+}
+
+.weight-log-card:hover {
+  transform: translateY(-2px);
+}
+
+.weight-log-date {
+  color: #666;
+  font-size: 14px;
+  margin-bottom: 8px;
+}
+
+.weight-log-details {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.weight-value {
+  font-size: 24px;
+  font-weight: 600;
+  color: #333;
+}
+
+.delete-log-btn {
+  background: none;
+  border: none;
+  color: #ff5722;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  opacity: 0.7;
+}
+
+.delete-log-btn:hover {
+  background-color: rgba(255, 87, 34, 0.1);
+  opacity: 1;
+}
+
+.delete-log-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.no-logs-message {
+  text-align: center;
+  padding: 40px;
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.no-logs-message p:first-child {
+  font-size: 18px;
+  font-weight: 500;
+  margin-bottom: 8px;
+  color: #333;
+}
+
+.no-logs-message p:last-child {
+  color: #666;
+}

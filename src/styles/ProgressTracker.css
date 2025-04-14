@@ -1,0 +1,171 @@
+.progress-tracker-container {
+  width: 100%;
+  max-width: 1200px;
+  min-height: calc(100vh - 70px); /* Subtract header height */
+  padding: 30px 20px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.progress-tracker-container h2 {
+  margin-bottom: 40px;
+  color: var(--text-dark);
+  font-size: 32px;
+  text-align: center;
+  font-weight: 700;
+  position: relative;
+  padding-bottom: 15px;
+  width: 100%;
+}
+
+.progress-tracker-container h2:after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80px;
+  height: 4px;
+  background: linear-gradient(
+    to right,
+    var(--gradient-start),
+    var(--gradient-end)
+  );
+  border-radius: 2px;
+}
+
+.progress-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 30px;
+  width: 100%;
+  margin-top: 20px;
+}
+
+.progress-card {
+  height: 200px;
+  background-color: var(--background-light);
+  border-radius: var(--card-radius);
+  box-shadow: 0 8px 30px var(--shadow-color);
+  overflow: hidden;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+}
+
+.progress-card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+}
+
+.progress-card h3 {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--text-dark);
+  text-align: center;
+  z-index: 1;
+  transition: all 0.3s ease;
+}
+
+.progress-card:hover h3 {
+  transform: scale(1.05);
+}
+
+/* Card-specific styling */
+.progress-card.strength {
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.9),
+    rgba(255, 255, 255, 0.8)
+  );
+  border-bottom: 5px solid var(--primary-orange);
+}
+
+.progress-card.strength::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0.5 24 24" fill="%23FF5722" opacity="0.07"><path d="M20.57 14.86L22 13.43 20.57 12 17 15.57 8.43 7 12 3.43 10.57 2 9.14 3.43 7.71 2 5.57 4.14 4.14 2.71 2.71 4.14 4.14 5.57 2 7.71 3.43 9.14 2 10.57 3.43 12 7 8.43 15.57 17 12 20.57 13.43 22 14.86 20.57z"/></svg>')
+    no-repeat center center;
+  background-size: 120px;
+  opacity: 0.1;
+  z-index: 0;
+}
+
+.progress-card.weight {
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.9),
+    rgba(255, 255, 255, 0.8)
+  );
+  border-bottom: 5px solid var(--secondary-orange);
+}
+
+.progress-card.weight::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="%23FF8A65" opacity="0.07"><path d="M12 3a4 4 0 014 4c0 1.95-1.4 3.58-3.25 3.93L13 15h3v2h-3.17l1 4.28L12 22l-1.83-.72L11.17 17H8v-2h3l.25-4.07A4.001 4.001 0 018 7a4 4 0 014-4m0 2a2 2 0 00-2 2 2 2 0 002 2 2 2 0 002-2 2 2 0 00-2-2z"/></svg>')
+    no-repeat center center;
+  background-size: 120px;
+  opacity: 0.1;
+  z-index: 0;
+}
+
+/* Loading and error states */
+.progress-tracker-container.loading,
+.progress-tracker-container.error {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 400px;
+  color: var(--text-medium);
+  font-size: 18px;
+}
+
+.progress-tracker-container.error {
+  color: var(--error-color);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .progress-tracker-container {
+    padding: 20px 15px;
+  }
+
+  .progress-tracker-container h2 {
+    font-size: 28px;
+    margin-bottom: 30px;
+  }
+
+  .progress-cards {
+    grid-template-columns: 1fr;
+  }
+
+  .progress-card {
+    height: 180px;
+  }
+}
+
+@media (max-width: 480px) {
+  .progress-tracker-container h2 {
+    font-size: 24px;
+  }
+
+  .progress-card h3 {
+    font-size: 20px;
+  }
+}

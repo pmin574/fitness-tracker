@@ -1,0 +1,186 @@
+.header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  height: 70px;
+  background: linear-gradient(
+    to right,
+    var(--gradient-start),
+    var(--gradient-end)
+  );
+  box-shadow: 0 2px 10px rgba(255, 87, 34, 0.3);
+  z-index: 1000;
+}
+
+.header-content {
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-sizing: border-box;
+  max-width: 100%;
+}
+
+.logo {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--text-light);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  user-select: none;
+  letter-spacing: 0.5px;
+  padding-left: 30px;
+}
+
+.logo:hover {
+  transform: scale(1.05);
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+}
+
+.logo:focus {
+  outline: none;
+}
+
+/* Hamburger menu */
+.menu-container {
+  position: relative;
+  padding-right: 30px;
+}
+
+.hamburger {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 28px;
+  height: 22px;
+  cursor: pointer;
+  z-index: 1010;
+  padding: 4px;
+}
+
+.hamburger span {
+  display: block;
+  height: 3px;
+  width: 100%;
+  background-color: var(--text-light);
+  border-radius: 3px;
+  transition: all 0.3s ease;
+}
+
+/* Hamburger animation */
+.hamburger.open span:nth-child(1) {
+  transform: translateY(9px) rotate(45deg);
+}
+
+.hamburger.open span:nth-child(2) {
+  opacity: 0;
+}
+
+.hamburger.open span:nth-child(3) {
+  transform: translateY(-9px) rotate(-45deg);
+}
+
+/* Dropdown menu */
+.dropdown-menu {
+  position: absolute;
+  top: 50px;
+  right: 0;
+  min-width: 220px;
+  background-color: var(--background-light);
+  border-radius: var(--card-radius);
+  box-shadow: 0 5px 20px var(--shadow-color);
+  padding: 10px 0;
+  z-index: 1001;
+  overflow: hidden;
+  animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.dropdown-menu ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.dropdown-menu li {
+  padding: 0;
+  margin: 0;
+}
+
+.dropdown-menu a {
+  display: block;
+  padding: 12px 20px;
+  color: var(--text-dark);
+  text-decoration: none;
+  font-size: 16px;
+  transition: all 0.2s ease;
+  font-weight: 500;
+}
+
+.dropdown-menu a:hover {
+  background-color: rgba(255, 87, 34, 0.1);
+  color: var(--primary-orange);
+  padding-left: 24px;
+}
+
+/* Menu divider */
+.menu-divider {
+  height: 1px;
+  margin: 8px 0;
+  background-color: var(--border-color);
+}
+
+/* Logout button in menu */
+.logout-menu-button {
+  width: 100%;
+  text-align: left;
+  background: none;
+  border: none;
+  padding: 12px 20px;
+  color: var(--error-color);
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.logout-menu-button:hover {
+  background-color: rgba(244, 67, 54, 0.1);
+  padding-left: 24px;
+}
+
+/* Media queries for responsive design */
+@media (max-width: 768px) {
+  .logo {
+    padding-left: 16px;
+    font-size: 22px;
+  }
+
+  .menu-container {
+    padding-right: 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .dropdown-menu {
+    width: 100%;
+    right: 0;
+    top: 60px;
+    border-radius: 0;
+    box-shadow: 0 5px 10px var(--shadow-color);
+  }
+}
