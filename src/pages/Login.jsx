@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
-  signInWithRedirect,
+  signInWithPopup,
   getRedirectResult,
   GoogleAuthProvider,
 } from "firebase/auth";
@@ -13,9 +13,10 @@ function Login() {
   const navigate = useNavigate();
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [isRedirectChecked, setIsRedirectChecked] = useState(false);
 
   useEffect(() => {
-    // Check for redirect result on component mount
+    // Check for redirect result on component mount (for back compatibility)
     const checkRedirectResult = async () => {
       try {
         setIsLoading(true);
@@ -28,15 +29,10 @@ function Login() {
         }
       } catch (error) {
         console.error("Error processing redirect result:", error);
-        if (error.code === "auth/unauthorized-domain") {
-          setError(
-            "This domain is not authorized for Firebase Authentication. Please check Firebase Console settings."
-          );
-        } else {
-          setError(`Authentication error: ${error.message}`);
-        }
+        handleAuthError(error);
       } finally {
         setIsLoading(false);
+        setIsRedirectChecked(true);
       }
     };
 
@@ -51,6 +47,47 @@ function Login() {
 
     return () => unsubscribe();
   }, [navigate]);
+
+  // Handle authentication errors
+  const handleAuthError = (error) => {
+    console.log("Auth error code:", error.code);
+    console.log("Auth error message:", error.message);
+
+    // Handle common Firebase errors
+    if (
+      error.code ===
+      "auth/requests-from-referer-https://pmin574.github.io-are-blocked."
+    ) {
+      setError(
+        "This domain is currently blocked by Firebase. Please check Firebase Console settings."
+      );
+    } else if (error.code === "auth/unauthorized-domain") {
+      setError(
+        "This domain is not authorized for Firebase Authentication. Please add your domain in Firebase Console."
+      );
+    } else if (error.code === "auth/operation-not-allowed") {
+      setError(
+        "Google sign-in is not enabled for this project. Please enable it in Firebase Console."
+      );
+    } else if (error.code === "auth/configuration-not-found") {
+      setError(
+        "Authentication configuration error. Please check Firebase Console settings."
+      );
+    } else if (error.code === "auth/invalid-api-key") {
+      setError("Invalid Firebase API key. Please check your configuration.");
+    } else if (error.code === "auth/popup-blocked") {
+      setError("Login popup was blocked. Please allow popups for this site.");
+    } else if (error.code === "auth/popup-closed-by-user") {
+      setError("Login popup was closed. Please try again.");
+    } else if (error.code === "auth/cancelled-popup-request") {
+      // This is a normal case when multiple popups are requested, no need to show error
+      setError(null);
+    } else if (error.code === "auth/network-request-failed") {
+      setError("Network error. Please check your internet connection.");
+    } else {
+      setError(`Authentication error: ${error.message}`);
+    }
+  };
 
   // Create a new user document in Firestore if it doesn't exist
   const createUserDocument = async (user) => {
@@ -81,21 +118,36 @@ function Login() {
     }
   };
 
-  const handleGoogleSignIn = () => {
+  const handleGoogleSignIn = async () => {
     setError(null);
     setIsLoading(true);
 
     try {
-      // Use redirect instead of popup
-      signInWithRedirect(auth, googleProvider);
-      // The page will redirect to Google for authentication
-      // After auth, the browser will redirect back and useEffect will handle the result
-    } catch (error) {
-      console.error("Error initiating Google sign-in:", error);
-      setError(`Authentication error: ${error.message}`);
+      // Try with popup first, which works better on most browsers
+      console.log("Attempting sign-in with popup...");
+      const result = await signInWithPopup(auth, googleProvider);
+      console.log("Sign-in with popup successful");
+
+      // User successfully authenticated
+      const user = result.user;
+      await createUserDocument(user);
+      navigate("/dashboard");
+    } catch (popupError) {
+      console.error("Error with popup sign-in:", popupError);
+      handleAuthError(popupError);
       setIsLoading(false);
     }
   };
+
+  if (!isRedirectChecked && isLoading) {
+    return (
+      <div className="login-page">
+        <div className="login-container">
+          <div className="loading-spinner">Checking authentication...</div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="login-page">

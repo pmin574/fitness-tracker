@@ -37,7 +37,8 @@ function Header() {
           role="button"
           tabIndex="0"
         >
-          NextRep
+          <div className="logo-icon">NR</div>
+          <div className="logo-text">NextRep</div>
         </div>
         <div className="menu-container">
           <div

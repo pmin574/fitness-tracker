@@ -26,14 +26,37 @@
 }
 
 .logo {
+  padding-left: 16px;
   font-size: 24px;
-  font-weight: 700;
-  color: var(--text-light);
+  font-weight: 800;
+  color: white;
   cursor: pointer;
-  transition: all 0.3s ease;
-  user-select: none;
-  letter-spacing: 0.5px;
-  padding-left: 30px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 100%;
+}
+
+.logo-icon {
+  width: 30px;
+  height: 30px;
+  background: white;
+  border-radius: 6px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: var(--primary);
+  font-weight: 700;
+  font-size: 16px;
+  line-height: 1;
+  margin-top: 0;
+  padding-bottom: 0;
+}
+
+.logo-text {
+  font-size: 24px;
+  color: white;
+  line-height: 24px;
 }
 
 .logo:hover {

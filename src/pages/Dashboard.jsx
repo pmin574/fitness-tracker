@@ -174,7 +174,7 @@ const Dashboard = () => {
             : { date: null, name: null },
         currentWeight:
           sortedWeightLogs.length > 0 ? sortedWeightLogs[0].weight : null,
-        recentWorkouts: sortedWorkouts.slice(0, 3),
+        recentWorkouts: sortedWorkouts.slice(0, 4),
         recentWeights: sortedWeightLogs.slice(0, 3),
       });
     } catch (error) {
@@ -283,7 +283,10 @@ const Dashboard = () => {
   return (
     <div className="dashboard-container">
       <div className="dashboard-header">
-        <h1>Next Rep</h1>
+        <div className="dashboard-title">
+          <div className="dashboard-logo">NR</div>
+          <h1>Next Rep</h1>
+        </div>
         <div className="welcome-text">
           Welcome Back, {user?.displayName?.split(" ")[0] || "Parker"}
         </div>
