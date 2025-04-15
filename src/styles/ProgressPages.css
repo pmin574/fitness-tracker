@@ -690,27 +690,24 @@
 }
 
 .calendar-heatmap-wrapper {
-  padding: 30px 0;
+  width: 100%;
+  margin: 20px 0;
   overflow-x: auto;
-  max-width: 100%;
-  -webkit-overflow-scrolling: touch;
-  scrollbar-width: thin;
+  padding-bottom: 10px;
 }
 
 .react-calendar-heatmap {
-  width: 100% !important;
-  height: auto !important;
+  width: 100%;
 }
 
 .react-calendar-heatmap .react-calendar-heatmap-small-rect {
-  fill: #eee;
+  stroke-width: 1px;
   stroke: white;
-  stroke-width: 3px;
   rx: 2px;
   ry: 2px;
-  transition: all 0.2s ease;
 }
 
+/* Ensure labels are visible */
 .react-calendar-heatmap .react-calendar-heatmap-month-label {
   font-size: 12px;
   fill: var(--text-medium);
@@ -797,44 +794,123 @@
   color: var(--text-medium);
 }
 
-@media (max-width: 900px) {
-  .calendar-heatmap-wrapper {
-    padding: 20px 0;
-  }
-}
-
+/* Smaller screens */
 @media (max-width: 768px) {
-  .exercise-heatmap-container {
-    padding: 20px;
+  .progress-page-container {
+    padding: 20px 10px;
   }
 
-  .calendar-heatmap-wrapper {
-    padding: 10px 0;
-  }
-
-  .react-calendar-heatmap .react-calendar-heatmap-small-rect {
-    stroke-width: 2px;
-  }
-
-  .heatmap-header {
+  .volume-header {
     flex-direction: column;
     align-items: flex-start;
     gap: 15px;
   }
 
-  .heatmap-description {
+  .date-range-selector {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    width: 100%;
+    gap: 8px;
+  }
+
+  .range-button {
+    padding: 8px 10px;
+    font-size: 14px;
+    min-width: auto;
+  }
+
+  .volume-description {
+    margin-top: 15px;
     font-size: 14px;
   }
 
-  .year-selector {
+  /* Make heatmap more visible on mobile */
+  .calendar-heatmap-wrapper {
     width: 100%;
     overflow-x: auto;
-    padding-bottom: 10px;
+    padding-bottom: 15px;
+    margin: 0 -15px;
+    padding: 0 15px 15px;
+  }
+
+  .react-calendar-heatmap {
+    min-width: 750px;
+  }
+
+  .react-calendar-heatmap .react-calendar-heatmap-small-rect {
+    stroke-width: 1px;
+    stroke: white;
+    rx: 2px;
+    ry: 2px;
+  }
+
+  /* Improve year selector responsiveness */
+  .year-selector {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    gap: 8px;
+    margin-top: 15px;
+    width: 100%;
+  }
+
+  .year-button {
+    padding: 6px 10px;
+    font-size: 14px;
+    min-width: auto;
+  }
+
+  /* Improve heatmap legend */
+  .heatmap-legend {
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    gap: 10px;
+    margin-top: 15px;
   }
 
   .react-calendar-heatmap text,
   .react-calendar-heatmap .react-calendar-heatmap-month-label {
     font-size: 9px;
+  }
+}
+
+/* Extra small screens */
+@media (max-width: 480px) {
+  .heatmap-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .year-selector {
+    margin-top: 15px;
+    margin-bottom: 10px;
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+  }
+
+  .year-button {
+    width: 100%;
+    padding: 8px 5px;
+    font-size: 13px;
+  }
+
+  .date-range-selector {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .calendar-heatmap-wrapper {
+    margin: 10px -15px;
+    padding: 0 15px 15px;
+  }
+
+  .react-calendar-heatmap {
+    min-width: 650px;
+  }
+
+  .react-calendar-heatmap .react-calendar-heatmap-month-label {
+    font-size: 10px;
   }
 }
 

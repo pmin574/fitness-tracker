@@ -1143,8 +1143,29 @@ const StrengthProgress = () => {
                   </p>
                 </div>
                 <div className="year-selector">
-                  {[heatmapYear - 2, heatmapYear - 1, heatmapYear].map(
-                    (year) => (
+                  {Array.from(
+                    new Set([
+                      ...workouts
+                        .filter((w) => {
+                          // Find this exercise in the workout
+                          return w.exercises?.some(
+                            (ex) =>
+                              ex.name?.toLowerCase() ===
+                              selectedExercise.name.toLowerCase()
+                          );
+                        })
+                        .map((w) => {
+                          // Extract just the year from the workout date
+                          const date = parseDate(w.date);
+                          return date.getFullYear();
+                        }),
+                      // Ensure current year is always included
+                      new Date().getFullYear(),
+                    ])
+                  )
+                    .sort((a, b) => b - a) // Sort descending (newest first)
+                    .slice(0, 5) // Show at most 5 years
+                    .map((year) => (
                       <button
                         key={year}
                         className={`year-button ${
@@ -1154,8 +1175,7 @@ const StrengthProgress = () => {
                       >
                         {year}
                       </button>
-                    )
-                  )}
+                    ))}
                 </div>
               </div>
 
