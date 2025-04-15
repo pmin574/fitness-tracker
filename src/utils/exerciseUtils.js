@@ -10,10 +10,15 @@ export const findMatchingExercises = (input) => {
 
   const lowerInput = input.toLowerCase();
 
-  // Get all matching exercises
-  const matches = exerciseList.filter((exercise) =>
-    exercise.toLowerCase().includes(lowerInput)
-  );
+  // Split the input into individual words
+  const searchWords = lowerInput.split(/\s+/).filter((word) => word.length > 0);
+
+  // Get exercises that contain all search words (in any order)
+  const matches = exerciseList.filter((exercise) => {
+    const lowerExercise = exercise.toLowerCase();
+    // Check if all search words are present in the exercise name
+    return searchWords.every((word) => lowerExercise.includes(word));
+  });
 
   // Sort matches with multiple criteria:
   // 1. Common exercises first
@@ -37,10 +42,27 @@ export const findMatchingExercises = (input) => {
     const bStartsWith = bLower.startsWith(lowerInput);
 
     // Check if input is a whole word in the exercise name
-    // Escape special regex characters in the input
-    const escapedInput = lowerInput.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-    const aHasWholeWord = new RegExp(`\\b${escapedInput}\\b`).test(aLower);
-    const bHasWholeWord = new RegExp(`\\b${escapedInput}\\b`).test(bLower);
+    // Instead of checking the whole phrase, check individual words
+    let aWordMatches = 0;
+    let bWordMatches = 0;
+
+    // Count how many search words are complete words in each exercise
+    searchWords.forEach((word) => {
+      const escapedWord = word.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+      const wordRegex = new RegExp(`\\b${escapedWord}\\b`, "i");
+
+      if (wordRegex.test(aLower)) aWordMatches++;
+      if (wordRegex.test(bLower)) bWordMatches++;
+    });
+
+    // Check for exact phrase match (highest priority)
+    const aContainsExactPhrase = aLower.includes(lowerInput);
+    const bContainsExactPhrase = bLower.includes(lowerInput);
+
+    // If one contains the exact search phrase and the other doesn't
+    if (aContainsExactPhrase !== bContainsExactPhrase) {
+      return aContainsExactPhrase ? -1 : 1;
+    }
 
     // If one is common and the other isn't
     if (aIsCommon !== bIsCommon) {
@@ -52,9 +74,9 @@ export const findMatchingExercises = (input) => {
       return aStartsWith ? -1 : 1;
     }
 
-    // If neither starts with input or both do, check for whole word match
-    if (aHasWholeWord !== bHasWholeWord) {
-      return aHasWholeWord ? -1 : 1;
+    // If one has more whole word matches than the other
+    if (aWordMatches !== bWordMatches) {
+      return aWordMatches > bWordMatches ? -1 : 1;
     }
 
     // If we get here, sort alphabetically
