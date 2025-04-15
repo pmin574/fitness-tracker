@@ -392,35 +392,62 @@ input[type="date"]:focus {
 
 .exercise-name-input-container {
   position: relative;
+  width: 100%;
+}
+
+.helper-text {
+  color: #777;
+  font-size: 12px;
+  margin-top: 4px;
+  margin-left: 2px;
+  font-style: italic;
 }
 
 .suggestions-list {
   position: absolute;
-  top: calc(100% + 5px);
+  top: 100%;
   left: 0;
   right: 0;
-  max-height: 200px;
+  background: white;
+  border: 1px solid #ddd;
+  border-top: none;
+  border-radius: 0 0 4px 4px;
+  max-height: 250px;
   overflow-y: auto;
-  background-color: var(--background-light);
-  border: 2px solid var(--border-color);
-  border-radius: var(--button-radius);
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
   z-index: 10;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .suggestion-item {
-  padding: 10px 15px;
+  padding: 12px 15px;
   cursor: pointer;
-  transition: all 0.2s ease;
-  color: var(--text-dark);
-  border-bottom: 1px solid var(--border-color);
+  border-bottom: 1px solid #eee;
+  transition: background-color 0.2s;
 }
 
 .suggestion-item:last-child {
   border-bottom: none;
 }
 
-.suggestion-item:hover {
+.suggestion-item:hover,
+.suggestion-item:focus {
+  background-color: rgba(255, 87, 34, 0.1);
+  color: var(--primary-orange);
+  outline: none; /* Remove focus outline while keeping it keyboard accessible */
+}
+
+.suggestion-item.bodyweight-exercise {
+  /* Remove all special styling to match regular suggestion items */
+  background-color: transparent;
+  border-left: none;
+  font-style: normal;
+  font-weight: normal;
+  color: var(--text-dark);
+  padding-left: 15px; /* Match the regular padding */
+}
+
+.suggestion-item.bodyweight-exercise:hover {
+  /* Match the hover style of regular suggestion items */
   background-color: rgba(255, 87, 34, 0.1);
   color: var(--primary-orange);
 }
@@ -573,4 +600,64 @@ div[style*="position: absolute"][style*="z-index: 10"]:not(
   100% {
     transform: scale(1) rotate(0);
   }
+}
+
+/* Bodyweight indicator styles */
+.bodyweight-indicator {
+  display: flex;
+  flex-direction: column;
+}
+
+.bodyweight-badge {
+  background-color: #e8f5e9;
+  border: 1px solid #a5d6a7;
+  border-radius: 4px;
+  padding: 8px 12px;
+  color: #2e7d32;
+  font-size: 14px;
+  font-weight: 500;
+  text-align: center;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.bodyweight-badge::before {
+  content: "🏋️‍♂️";
+  margin-right: 8px;
+  font-size: 16px;
+}
+
+.bodyweight-input {
+  background-color: var(--background-light);
+  cursor: not-allowed;
+  color: var(--text-dark);
+  font-style: italic;
+  opacity: 0.9;
+  box-shadow: none;
+  border-color: var(--border-color);
+}
+
+.bodyweight-input:focus {
+  outline: none;
+  border-color: var(--border-color);
+  box-shadow: none;
+}
+
+.add-exercise-btn:disabled,
+.add-set-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  background-color: #ccc;
+  color: #666;
+  border-color: #ccc;
+  box-shadow: none;
+}
+
+.add-exercise-btn:disabled:hover,
+.add-set-btn:disabled:hover {
+  transform: none;
+  background-color: #ccc;
 }

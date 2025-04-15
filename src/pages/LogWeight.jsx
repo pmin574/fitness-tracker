@@ -3,15 +3,45 @@ import { useNavigate } from "react-router-dom";
 import { auth, db } from "../firebase";
 import { doc, updateDoc, arrayUnion, getDoc } from "firebase/firestore";
 import { motion } from "framer-motion";
-import { FiArrowLeft } from "react-icons/fi";
 import "../styles/LogWeight.css";
 
 const LogWeight = () => {
   const navigate = useNavigate();
   const [weight, setWeight] = useState("");
-  const [date, setDate] = useState(new Date().toISOString().split("T")[0]);
+  const [date, setDate] = useState(() => {
+    // Get the current date in local timezone, ensuring it's today's date
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, "0"); // months are 0-indexed
+    const day = String(today.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
+  });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+
+  // Handle weight input validation with up to 2 decimal places
+  const handleWeightChange = (value) => {
+    // Allow empty or just a decimal point for typing
+    if (value === "" || value === ".") {
+      setWeight(value);
+      return;
+    }
+
+    // Validate the input pattern for weight with up to 2 decimal places
+    const validWeightPattern = /^[0-9]*\.?[0-9]{0,2}$/;
+    if (!validWeightPattern.test(value)) {
+      return; // Reject invalid input
+    }
+
+    // Check if value is within range (1-1500)
+    const numValue = parseFloat(value);
+    if (!isNaN(numValue) && (numValue < 1 || numValue > 1500)) {
+      return; // Reject out of range values
+    }
+
+    // If it passes validation, update the state
+    setWeight(value);
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -24,6 +54,12 @@ const LogWeight = () => {
         throw new Error("You must be logged in to log weight");
       }
 
+      // Validate weight is within acceptable range
+      const weightValue = parseFloat(weight);
+      if (isNaN(weightValue) || weightValue < 1 || weightValue > 1500) {
+        throw new Error("Weight must be between 1 and 1500 pounds");
+      }
+
       const userRef = doc(db, "users", user.uid);
       const userDoc = await getDoc(userRef);
 
@@ -32,7 +68,7 @@ const LogWeight = () => {
       }
 
       const weightEntry = {
-        weight: parseFloat(weight),
+        weight: weightValue,
         date: date,
         timestamp: new Date().toISOString(),
       };
@@ -58,13 +94,6 @@ const LogWeight = () => {
       transition={{ duration: 0.4 }}
     >
       <div className="log-weight-header">
-        <button
-          className="back-button"
-          onClick={() => navigate("/progress-tracker")}
-        >
-          <FiArrowLeft size={20} style={{ marginRight: "8px" }} />
-          Back
-        </button>
         <h2>Log Weight</h2>
       </div>
 
@@ -72,13 +101,16 @@ const LogWeight = () => {
         <div className="form-group">
           <label htmlFor="weight">Weight (lbs)</label>
           <input
-            type="number"
+            type="text"
             id="weight"
-            step="0.1"
             value={weight}
-            onChange={(e) => setWeight(e.target.value)}
+            onChange={(e) => handleWeightChange(e.target.value)}
             required
             placeholder="Enter weight in pounds"
+            pattern="^[0-9]+(\.[0-9]{1,2})?$"
+            title="Enter a weight value between 1-1500 pounds"
+            min="1"
+            max="1500"
           />
         </div>
 
@@ -90,6 +122,13 @@ const LogWeight = () => {
             value={date}
             onChange={(e) => setDate(e.target.value)}
             required
+            max={(() => {
+              const today = new Date();
+              const year = today.getFullYear();
+              const month = String(today.getMonth() + 1).padStart(2, "0");
+              const day = String(today.getDate()).padStart(2, "0");
+              return `${year}-${month}-${day}`;
+            })()}
           />
         </div>
 

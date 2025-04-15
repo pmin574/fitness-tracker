@@ -9,9 +9,59 @@ export const findMatchingExercises = (input) => {
   if (!input) return [];
 
   const lowerInput = input.toLowerCase();
-  return exerciseList
-    .filter((exercise) => exercise.toLowerCase().includes(lowerInput))
-    .slice(0, 5); // Limit to 5 results
+
+  // Get all matching exercises
+  const matches = exerciseList.filter((exercise) =>
+    exercise.toLowerCase().includes(lowerInput)
+  );
+
+  // Sort matches with multiple criteria:
+  // 1. Common exercises first
+  // 2. Exercises that start with the search term
+  // 3. Exercises where search term is a complete word
+  // 4. Alphabetical order
+  const sortedMatches = matches.sort((a, b) => {
+    const aLower = a.toLowerCase();
+    const bLower = b.toLowerCase();
+
+    // Check if exercises are in the common list
+    const aIsCommon = commonExercises.some(
+      (common) => common.toLowerCase() === aLower
+    );
+    const bIsCommon = commonExercises.some(
+      (common) => common.toLowerCase() === bLower
+    );
+
+    // Check if exercises start with the input
+    const aStartsWith = aLower.startsWith(lowerInput);
+    const bStartsWith = bLower.startsWith(lowerInput);
+
+    // Check if input is a whole word in the exercise name
+    // Escape special regex characters in the input
+    const escapedInput = lowerInput.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    const aHasWholeWord = new RegExp(`\\b${escapedInput}\\b`).test(aLower);
+    const bHasWholeWord = new RegExp(`\\b${escapedInput}\\b`).test(bLower);
+
+    // If one is common and the other isn't
+    if (aIsCommon !== bIsCommon) {
+      return aIsCommon ? -1 : 1;
+    }
+
+    // If both are common or both are not common, check if they start with the input
+    if (aStartsWith !== bStartsWith) {
+      return aStartsWith ? -1 : 1;
+    }
+
+    // If neither starts with input or both do, check for whole word match
+    if (aHasWholeWord !== bHasWholeWord) {
+      return aHasWholeWord ? -1 : 1;
+    }
+
+    // If we get here, sort alphabetically
+    return a.localeCompare(b);
+  });
+
+  return sortedMatches.slice(0, 8); // Show more results (up to 8)
 };
 
 // Common exercises that should be prioritized in matching

@@ -57,6 +57,7 @@ import {
 } from "date-fns";
 import { motion } from "framer-motion";
 import { FiCalendar, FiTrendingUp, FiArrowLeft } from "react-icons/fi";
+import { calisthenicExercises } from "../data/calisthenicExercises";
 
 // Register ChartJS components
 ChartJS.register(
@@ -76,6 +77,8 @@ const StrengthProgress = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [workouts, setWorkouts] = useState([]);
+  const [weightLogs, setWeightLogs] = useState([]);
+  const [currentBodyweight, setCurrentBodyweight] = useState(155); // Default if no weight logs exist
   const [summaryMetrics, setSummaryMetrics] = useState({
     totalWorkouts: 0,
     totalExercises: 0,
@@ -84,6 +87,7 @@ const StrengthProgress = () => {
   });
   const [exerciseList, setExerciseList] = useState([]);
   const [selectedExercise, setSelectedExercise] = useState(null);
+  const [isBodyweightExercise, setIsBodyweightExercise] = useState(false);
   const [chartData, setChartData] = useState(null);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
@@ -121,11 +125,27 @@ const StrengthProgress = () => {
         if (userDoc.exists()) {
           const userData = userDoc.data();
           const workouts = userData.workouts || [];
+          const weights = userData.weightLogs || [];
+
+          // Sort weight logs by date, most recent first
+          const sortedWeightLogs = [...weights].sort((a, b) => {
+            const aDate = parseDate(a.date);
+            const bDate = parseDate(b.date);
+            return bDate - aDate; // Descending order (newest first)
+          });
+
+          // Set current bodyweight based on most recent log
+          if (sortedWeightLogs.length > 0) {
+            setCurrentBodyweight(sortedWeightLogs[0].weight);
+          }
+
+          setWeightLogs(sortedWeightLogs);
           setWorkouts(workouts);
           calculateSummaryMetrics(workouts);
           extractUniqueExercises(workouts);
         } else {
           setWorkouts([]);
+          setWeightLogs([]);
           setExerciseList([]);
           setSummaryMetrics({
             totalWorkouts: 0,
@@ -192,8 +212,15 @@ const StrengthProgress = () => {
             totalSets += exercise.sets.length;
             exercise.sets.forEach((set) => {
               const reps = parseInt(set.reps) || 0;
-              const weight =
-                set.weight === "bodyweight" ? 155 : parseInt(set.weight) || 0;
+              let weight;
+              if (
+                set.weight === "bodyweight" ||
+                set.weight === "🏋️‍♀️ bodyweight"
+              ) {
+                weight = Math.round(currentBodyweight * 0.25); // Use 1/4 of bodyweight
+              } else {
+                weight = parseInt(set.weight) || 0;
+              }
               totalWeight += reps * weight;
             });
           }
@@ -327,8 +354,16 @@ const StrengthProgress = () => {
   const handleExerciseSelect = (exercise) => {
     if (exercise === "none") {
       setSelectedExercise(null);
+      setIsBodyweightExercise(false);
     } else {
       setSelectedExercise({ ...exercise });
+
+      // Check if this is a bodyweight exercise by checking the calisthenicExercises list
+      const isBW = calisthenicExercises.some(
+        (bwExercise) => exercise.name.toLowerCase() === bwExercise.toLowerCase()
+      );
+
+      setIsBodyweightExercise(isBW);
       setFilterType("all");
     }
     setDropdownOpen(false);
@@ -404,11 +439,16 @@ const StrengthProgress = () => {
 
       // Add each set as a separate data point
       filteredSets.forEach((set, index) => {
-        const weight =
-          set.weight === "bodyweight" ? 155 : parseInt(set.weight) || 0;
+        let weight;
+        if (set.weight === "bodyweight" || set.weight === "🏋️‍♀️ bodyweight") {
+          weight = Math.round(currentBodyweight * 0.25); // Use 1/4 of bodyweight instead of full value
+        } else {
+          weight = parseInt(set.weight) || 0;
+        }
+
         const reps = parseInt(set.reps) || 0;
 
-        if (weight > 0) {
+        if (reps > 0) {
           allSets.push({
             date: formattedDate,
             weight: weight,
@@ -605,8 +645,12 @@ const StrengthProgress = () => {
       let volume = 0;
       if (exerciseEntry?.sets && Array.isArray(exerciseEntry.sets)) {
         volume = exerciseEntry.sets.reduce((total, set) => {
-          const weight =
-            set.weight === "bodyweight" ? 155 : parseInt(set.weight) || 0;
+          let weight;
+          if (set.weight === "bodyweight" || set.weight === "🏋️‍♀️ bodyweight") {
+            weight = Math.round(currentBodyweight * 0.25); // Use 1/4 of bodyweight
+          } else {
+            weight = parseInt(set.weight) || 0;
+          }
           const reps = parseInt(set.reps) || 0;
           return total + weight * reps;
         }, 0);
@@ -819,7 +863,9 @@ const StrengthProgress = () => {
               >
                 <div className="filter-controls">
                   <h4 className="chart-title">
-                    Weight Progression
+                    {isBodyweightExercise
+                      ? "Rep Progression"
+                      : "Weight Progression"}
                     <span
                       className={`filter-badge ${
                         filterType === "all" ? "all-reps" : ""
@@ -922,8 +968,12 @@ const StrengthProgress = () => {
                         labels: exerciseChartData.map((item) => item.date),
                         datasets: [
                           {
-                            label: "Weight (lbs)",
-                            data: exerciseChartData.map((item) => item.weight),
+                            label: isBodyweightExercise
+                              ? "Reps"
+                              : "Weight (lbs)",
+                            data: exerciseChartData.map((item) =>
+                              isBodyweightExercise ? item.reps : item.weight
+                            ),
                             borderColor: "rgba(255, 87, 34, 1)",
                             backgroundColor: "rgba(255, 87, 34, 0.7)",
                             fill: false,
@@ -963,11 +1013,16 @@ const StrengthProgress = () => {
                               label: function (context) {
                                 const item =
                                   exerciseChartData[context.dataIndex];
-                                return [
-                                  `Weight: ${item.weight} lbs`,
-                                  `Reps: ${item.reps}`,
-                                  `Set: ${item.setLabel}`,
-                                ];
+                                return isBodyweightExercise
+                                  ? [
+                                      `Reps: ${item.reps}`,
+                                      `Set: ${item.setLabel}`,
+                                    ]
+                                  : [
+                                      `Weight: ${item.weight} lbs`,
+                                      `Reps: ${item.reps}`,
+                                      `Set: ${item.setLabel}`,
+                                    ];
                               },
                             },
                           },
@@ -986,7 +1041,9 @@ const StrengthProgress = () => {
                             beginAtZero: false,
                             title: {
                               display: true,
-                              text: "Weight (lbs)",
+                              text: isBodyweightExercise
+                                ? "Reps"
+                                : "Weight (lbs)",
                               color: "#666",
                               font: {
                                 size: 13,
@@ -1055,9 +1112,12 @@ const StrengthProgress = () => {
                   </div>
                 </div>
                 <p className="volume-description">
-                  Total workout volume (weight × reps) over time. Higher volume
-                  generally indicates increased work capacity and strength
-                  endurance.
+                  Total workout volume (weight × reps) over time. For bodyweight
+                  exercises,
+                  <strong> 25%</strong> of your current bodyweight (
+                  {currentBodyweight} lbs) is used in calculations. Higher
+                  volume generally indicates increased work capacity and
+                  strength endurance.
                 </p>
 
                 {volumeChartData && volumeChartData.length > 0 ? (

@@ -10,6 +10,8 @@ import {
   findMatchingExercises,
   findClosestExercise,
 } from "../utils/exerciseUtils";
+import { exerciseList } from "../data/exerciseList";
+import { calisthenicExercises } from "../data/calisthenicExercises";
 import "../styles/LogWorkout.css";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
@@ -62,6 +64,12 @@ function LogWorkout() {
 
   // Add a new exercise to the workout
   const addExercise = () => {
+    // Limit to maximum 20 exercises
+    if (exercises.length >= 20) {
+      alert("You've reached the maximum limit of 20 exercises per workout");
+      return;
+    }
+
     const newExerciseId = Date.now();
     const newExercise = {
       id: newExerciseId,
@@ -86,9 +94,26 @@ function LogWorkout() {
     setExercises(
       exercises.map((exercise) => {
         if (exercise.id === exerciseId) {
+          // Limit to maximum 20 sets per exercise
+          if (exercise.sets.length >= 20) {
+            alert("You've reached the maximum limit of 20 sets per exercise");
+            return exercise;
+          }
+
+          // Check if this is a bodyweight exercise
+          const isBodyweight =
+            exercise.name && isCalisthenicExercise(exercise.name);
+
           return {
             ...exercise,
-            sets: [...exercise.sets, { id: Date.now(), reps: "", weight: "" }],
+            sets: [
+              ...exercise.sets,
+              {
+                id: Date.now(),
+                reps: "",
+                weight: isBodyweight ? "🏋️‍♀️ bodyweight" : "",
+              },
+            ],
           };
         }
         return exercise;
@@ -116,11 +141,35 @@ function LogWorkout() {
 
   // Handle exercise name change and show suggestions
   const handleExerciseNameChange = (id, value) => {
-    setExercises(
-      exercises.map((exercise) =>
-        exercise.id === id ? { ...exercise, name: value } : exercise
-      )
-    );
+    // Check if the current exercise is bodyweight
+    const currentExercise = exercises.find((ex) => ex.id === id);
+    const wasBodyweight =
+      currentExercise &&
+      currentExercise.name &&
+      isCalisthenicExercise(currentExercise.name);
+
+    // If we're changing a bodyweight exercise, and there are fields with "🏋️‍♀️ bodyweight", clear them
+    if (wasBodyweight && !isCalisthenicExercise(value)) {
+      setExercises(
+        exercises.map((exercise) =>
+          exercise.id === id
+            ? {
+                ...exercise,
+                name: value,
+                sets: exercise.sets.map((set) =>
+                  set.weight === "🏋️‍♀️ bodyweight" ? { ...set, weight: "" } : set
+                ),
+              }
+            : exercise
+        )
+      );
+    } else {
+      setExercises(
+        exercises.map((exercise) =>
+          exercise.id === id ? { ...exercise, name: value } : exercise
+        )
+      );
+    }
 
     // Show suggestions if there's input
     if (value.trim()) {
@@ -133,14 +182,51 @@ function LogWorkout() {
 
   // Handle suggestion selection
   const handleSuggestionClick = (exerciseId, suggestion) => {
-    setExercises(
-      exercises.map((exercise) =>
-        exercise.id === exerciseId
-          ? { ...exercise, name: suggestion }
-          : exercise
-      )
-    );
+    console.log("Selected exercise:", suggestion);
+    console.log("Is bodyweight exercise:", isCalisthenicExercise(suggestion));
+
+    // Immediately clear suggestions
     setSuggestions([]);
+
+    // Check if the current exercise is bodyweight and new one is not
+    const isBodyweight = isCalisthenicExercise(suggestion);
+
+    // Find the current exercise to check if we're switching from bodyweight to weighted
+    const currentExercise = exercises.find((ex) => ex.id === exerciseId);
+    const wasBodyweight =
+      currentExercise &&
+      currentExercise.name &&
+      isCalisthenicExercise(currentExercise.name);
+
+    // Update the exercise with the selected name
+    setExercises((prev) =>
+      prev.map((exercise) => {
+        if (exercise.id === exerciseId) {
+          if (isBodyweight) {
+            // If it's a bodyweight exercise, set all sets' weight to "🏋️‍♀️ bodyweight"
+            return {
+              ...exercise,
+              name: suggestion,
+              sets: exercise.sets.map((set) => ({
+                ...set,
+                weight: "🏋️‍♀️ bodyweight",
+              })),
+            };
+          } else if (wasBodyweight) {
+            // If switching from bodyweight to weighted, clear the weight field
+            return {
+              ...exercise,
+              name: suggestion,
+              sets: exercise.sets.map((set) => ({ ...set, weight: "" })),
+            };
+          } else {
+            // Regular case - just update the name
+            return { ...exercise, name: suggestion };
+          }
+        }
+        return exercise;
+      })
+    );
   };
 
   // Handle set input changes
@@ -166,6 +252,30 @@ function LogWorkout() {
           return exercise;
         })
       );
+    } else if (field === "weight") {
+      // Don't allow editing if it's a bodyweight exercise
+      if (value === "🏋️‍♀️ bodyweight") return;
+
+      // For weight field, allow floating point with up to 2 decimal places
+      // Regex allows: empty string, digits only, or digits with up to 2 decimal places
+      if (value === "" || /^(\d+\.?\d{0,2}|\.\d{1,2})$/.test(value)) {
+        setExercises(
+          exercises.map((exercise) => {
+            if (exercise.id === exerciseId) {
+              return {
+                ...exercise,
+                sets: exercise.sets.map((set) => {
+                  if (set.id === setId) {
+                    return { ...set, [field]: value };
+                  }
+                  return set;
+                }),
+              };
+            }
+            return exercise;
+          })
+        );
+      }
     } else {
       // Handle other fields normally
       setExercises(
@@ -198,6 +308,14 @@ function LogWorkout() {
         nextElement.focus();
       }
     }
+  };
+
+  // Function to check if an exercise is a calisthenic (bodyweight) exercise
+  const isCalisthenicExercise = (exerciseName) => {
+    if (!exerciseName) return false;
+    return calisthenicExercises.some(
+      (exercise) => exercise.toLowerCase() === exerciseName.toLowerCase()
+    );
   };
 
   // Save workout to Firestore
@@ -240,7 +358,9 @@ function LogWorkout() {
           name: exercise.name,
           sets: exercise.sets.map((set) => ({
             reps: set.reps,
-            weight: set.weight || "bodyweight", // If weight is empty, mark as bodyweight
+            weight:
+              set.weight ||
+              (isCalisthenicExercise(exercise.name) ? "🏋️‍♀️ bodyweight" : ""), // Better handling of weights
           })),
         })),
       };
@@ -418,6 +538,12 @@ function LogWorkout() {
                           onKeyDown={handleInputKeyDown}
                           placeholder="e.g., 135 or leave empty"
                           required={false}
+                          readOnly={set.weight === "🏋️‍♀️ bodyweight"}
+                          className={
+                            set.weight === "🏋️‍♀️ bodyweight"
+                              ? "bodyweight-input"
+                              : ""
+                          }
                         />
                       </div>
                     </div>
@@ -427,6 +553,12 @@ function LogWorkout() {
                   type="button"
                   onClick={() => addSet(exercise.id)}
                   className="add-set-btn"
+                  disabled={exercise.sets.length >= 20}
+                  title={
+                    exercise.sets.length >= 20
+                      ? "Maximum 20 sets per exercise"
+                      : "Add another set"
+                  }
                 >
                   Add Set
                 </button>
@@ -440,7 +572,12 @@ function LogWorkout() {
             type="button"
             onClick={addExercise}
             className="add-exercise-btn"
-            disabled={isSaving}
+            disabled={isSaving || exercises.length >= 20}
+            title={
+              exercises.length >= 20
+                ? "Maximum 20 exercises per workout"
+                : "Add a new exercise"
+            }
           >
             Add Exercise
           </button>

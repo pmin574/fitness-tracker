@@ -88,21 +88,34 @@ const Dashboard = () => {
 
       // Sort weight logs by date (newest first)
       const sortedWeightLogs = [...weightLogs].sort((a, b) => {
-        const dateA = parseDate(a.date);
-        const dateB = parseDate(b.date);
-        return dateB - dateA;
+        const aDate = parseDate(a.date);
+        const bDate = parseDate(b.date);
+        return bDate - aDate;
       });
+
+      // Get the most recent bodyweight, or use 155 as default if none exists
+      let currentBodyweight = 155;
+      if (sortedWeightLogs.length > 0) {
+        currentBodyweight = sortedWeightLogs[0].weight;
+      }
 
       // Calculate total volume
       let totalVolume = 0;
-      workouts.forEach((workout) => {
+      sortedWorkouts.forEach((workout) => {
         if (workout.exercises && Array.isArray(workout.exercises)) {
           workout.exercises.forEach((exercise) => {
             if (exercise.sets && Array.isArray(exercise.sets)) {
               exercise.sets.forEach((set) => {
                 const reps = parseInt(set.reps) || 0;
-                const weight =
-                  set.weight === "bodyweight" ? 155 : parseInt(set.weight) || 0;
+                let weight;
+                if (
+                  set.weight === "bodyweight" ||
+                  set.weight === "🏋️‍♀️ bodyweight"
+                ) {
+                  weight = Math.round(currentBodyweight * 0.25); // Use quarter of bodyweight
+                } else {
+                  weight = parseInt(set.weight) || 0;
+                }
                 totalVolume += reps * weight;
               });
             }

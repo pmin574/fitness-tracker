@@ -284,8 +284,11 @@ function WorkoutHistory() {
                               <div className="set-number">{setIndex + 1}</div>
                               <div className="set-reps">{set.reps}</div>
                               <div className="set-weight">
-                                {set.weight === "bodyweight"
-                                  ? "BW"
+                                {set.weight === "bodyweight" ||
+                                set.weight === "BW" ||
+                                set.weight === "🏋️‍♀️ bodyweight" ||
+                                exercise.name.includes("(Bodyweight)")
+                                  ? "🏋️‍♀️ bodyweight"
                                   : set.weight}
                               </div>
                             </div>
