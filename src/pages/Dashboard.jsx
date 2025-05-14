@@ -353,8 +353,8 @@ const Dashboard = () => {
               title="Calculated from your first and most recent weight logs of the current week. If you have fewer than 2 logs this week, it shows the change between your last two entries."
             >
               ⓘ
-            </span>
-          </div>
+                </span>
+              </div>
           <div className="stat-value weight-trend">
             {stats.weightChange !== null ? (
               <span
@@ -363,7 +363,7 @@ const Dashboard = () => {
                 {stats.weightChange > 0 ? "+" : ""}
                 {stats.weightChange}
                 <span className="stat-unit">lbs</span>
-              </span>
+                </span>
             ) : (
               "No data"
             )}
@@ -381,9 +381,9 @@ const Dashboard = () => {
             ) : (
               "No workouts"
             )}
-          </div>
-        </div>
-      </div>
+              </div>
+              </div>
+            </div>
 
       <div className="dashboard-sections">
         <div className="dashboard-section">
@@ -482,7 +482,7 @@ const Dashboard = () => {
                     options={chartOptions}
                     height={180}
                   />
-                </div>
+              </div>
               ) : (
                 <div className="empty-chart">
                   Not enough data to display chart
@@ -501,7 +501,7 @@ const Dashboard = () => {
                 ) : (
                   "No data"
                 )}
-              </div>
+                </div>
             </div>
           </div>
         </div>

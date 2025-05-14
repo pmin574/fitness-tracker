@@ -318,6 +318,9 @@ function LogWorkout() {
     );
   };
 
+  // Utility for valid exercise name
+  const isValidExerciseName = (name) => exerciseList.includes(name);
+
   // Save workout to Firestore
   const saveWorkout = async (e) => {
     e.preventDefault();
@@ -345,6 +348,20 @@ function LogWorkout() {
 
       if (exercises.some((ex) => ex.sets.some((set) => !set.reps))) {
         setError("Please provide reps for all sets");
+        setIsSaving(false);
+        return;
+      }
+
+      if (
+        exercises.some(
+          (ex) =>
+            !isCalisthenicExercise(ex.name) &&
+            ex.sets.some((set) => !set.weight && set.weight !== 0)
+        )
+      ) {
+        setError(
+          "Please provide weight for all sets (unless it's a bodyweight exercise)."
+        );
         setIsSaving(false);
         return;
       }
@@ -452,10 +469,18 @@ function LogWorkout() {
                     placeholder="Enter exercise name"
                     onFocus={() => setFocusedExerciseId(exercise.id)}
                     onBlur={() => {
-                      // Add a small delay to allow for suggestion click
                       setTimeout(() => {
                         setFocusedExerciseId(null);
                         setSuggestions([]);
+                        // Only allow valid names
+                        setExercises((prev) =>
+                          prev.map((ex) =>
+                            ex.id === exercise.id &&
+                            !isValidExerciseName(ex.name)
+                              ? { ...ex, name: "" }
+                              : ex
+                          )
+                        );
                       }, 200);
                     }}
                     autoComplete="off"
@@ -504,15 +529,19 @@ function LogWorkout() {
                           type="number"
                           id={`reps-${exercise.id}-${set.id}`}
                           value={set.reps}
-                          onChange={(e) =>
-                            handleSetChange(
-                              exercise.id,
-                              set.id,
-                              "reps",
-                              e.target.value
+                          onChange={(e) => {
+                            let val = e.target.value;
+                            if (
+                              val !== "" &&
+                              (parseInt(val) < 0 || parseInt(val) > 1000)
                             )
-                          }
-                          onKeyDown={handleInputKeyDown}
+                              return;
+                            handleSetChange(exercise.id, set.id, "reps", val);
+                          }}
+                          onKeyDown={(e) => {
+                            if (["e", "E", "+", "-"].includes(e.key))
+                              e.preventDefault();
+                          }}
                           placeholder="e.g., 10"
                           min="1"
                           step="1"
@@ -521,23 +550,36 @@ function LogWorkout() {
                       </div>
                       <div className="form-group">
                         <label htmlFor={`weight-${exercise.id}-${set.id}`}>
-                          Weight (optional)
+                          Weight
                         </label>
                         <input
-                          type="text"
+                          type="number"
                           id={`weight-${exercise.id}-${set.id}`}
                           value={set.weight}
-                          onChange={(e) =>
-                            handleSetChange(
-                              exercise.id,
-                              set.id,
-                              "weight",
-                              e.target.value
+                          onChange={(e) => {
+                            let val = e.target.value;
+                            if (set.weight === "🏋️‍♀️ bodyweight") return;
+                            if (!/^\d*\.?\d{0,1}$/.test(val)) return;
+                            if (
+                              val !== "" &&
+                              (parseFloat(val) < 0 || parseFloat(val) > 1000)
                             )
+                              return;
+                            handleSetChange(exercise.id, set.id, "weight", val);
+                          }}
+                          onKeyDown={(e) => {
+                            if (["e", "E", "+", "-"].includes(e.key))
+                              e.preventDefault();
+                          }}
+                          placeholder={
+                            set.weight === "🏋️‍♀️ bodyweight"
+                              ? "Bodyweight"
+                              : "e.g., 135"
                           }
-                          onKeyDown={handleInputKeyDown}
-                          placeholder="e.g., 135 or leave empty"
-                          required={false}
+                          min="0"
+                          max="1000"
+                          step="0.1"
+                          required={set.weight !== "🏋️‍♀️ bodyweight"}
                           readOnly={set.weight === "🏋️‍♀️ bodyweight"}
                           className={
                             set.weight === "🏋️‍♀️ bodyweight"
