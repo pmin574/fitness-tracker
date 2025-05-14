@@ -135,25 +135,33 @@ const Dashboard = () => {
         currentWeekStart.setDate(now.getDate() - now.getDay()); // Go back to Sunday
         currentWeekStart.setHours(0, 0, 0, 0); // Start of day
 
-        // Get weekly logs (current week only)
-        const currentWeekLogs = weightLogs.filter((log) => {
-          const logDate = parseDate(log.date);
-          return logDate >= currentWeekStart;
-        });
+        // Get weekly logs (current week only, sorted oldest to newest)
+        const currentWeekLogs = weightLogs
+          .filter((log) => {
+            const logDate = parseDate(log.date);
+            return logDate >= currentWeekStart;
+          })
+          .sort((a, b) => parseDate(a.date) - parseDate(b.date));
 
-        // If we have at least 2 logs in the current week, calculate that trend
         if (currentWeekLogs.length >= 2) {
-          const firstOfWeek =
-            currentWeekLogs[currentWeekLogs.length - 1].weight;
-          const latestOfWeek = currentWeekLogs[0].weight;
-          return latestOfWeek - firstOfWeek;
+          const firstLog = currentWeekLogs[0];
+          const lastLog = currentWeekLogs[currentWeekLogs.length - 1];
+          const firstDate = parseDate(firstLog.date);
+          const lastDate = parseDate(lastLog.date);
+          const days = (lastDate - firstDate) / (1000 * 60 * 60 * 24);
+          if (days === 0) return 0;
+          const change = lastLog.weight - firstLog.weight;
+          const avgChange = change / days;
+          // Show the total change over the week (avgChange * 7), or just the actual change
+          // We'll show the actual change over the week
+          return parseFloat(change.toFixed(1));
         }
 
         // Fallback: If not enough entries in current week, use the most recent two entries
         if (weightLogs.length >= 2) {
           const latestWeight = weightLogs[0].weight;
           const secondLatestWeight = weightLogs[1].weight;
-          return latestWeight - secondLatestWeight;
+          return parseFloat((latestWeight - secondLatestWeight).toFixed(1));
         }
 
         return null;
@@ -353,8 +361,8 @@ const Dashboard = () => {
               title="Calculated from your first and most recent weight logs of the current week. If you have fewer than 2 logs this week, it shows the change between your last two entries."
             >
               ⓘ
-                </span>
-              </div>
+            </span>
+          </div>
           <div className="stat-value weight-trend">
             {stats.weightChange !== null ? (
               <span
@@ -363,7 +371,7 @@ const Dashboard = () => {
                 {stats.weightChange > 0 ? "+" : ""}
                 {stats.weightChange}
                 <span className="stat-unit">lbs</span>
-                </span>
+              </span>
             ) : (
               "No data"
             )}
@@ -381,9 +389,9 @@ const Dashboard = () => {
             ) : (
               "No workouts"
             )}
-              </div>
-              </div>
-            </div>
+          </div>
+        </div>
+      </div>
 
       <div className="dashboard-sections">
         <div className="dashboard-section">
@@ -482,7 +490,7 @@ const Dashboard = () => {
                     options={chartOptions}
                     height={180}
                   />
-              </div>
+                </div>
               ) : (
                 <div className="empty-chart">
                   Not enough data to display chart
@@ -501,7 +509,7 @@ const Dashboard = () => {
                 ) : (
                   "No data"
                 )}
-                </div>
+              </div>
             </div>
           </div>
         </div>
